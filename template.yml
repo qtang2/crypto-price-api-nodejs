@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Serverless Cryptocurrency Price API
+
+Resources:
+  GetCryptoPriceFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: handler.getCryptoPrice
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref CryptoPriceTable
+          SES_EMAIL: 'your-email@example.com'
+      Events:
+        GetCryptoPriceApi:
+          Type: Api
+          Properties:
+            Path: /crypto-price
+            Method: get
+
+  GetSearchHistoryFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: handler.getSearchHistory
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref CryptoPriceTable
+      Events:
+        GetSearchHistoryApi:
+          Type: Api
+          Properties:
+            Path: /search-history
+            Method: get
+
+  CryptoPriceTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: CryptoPriceSearchHistory
+      AttributeDefinitions:
+        - AttributeName: searchId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: searchId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
