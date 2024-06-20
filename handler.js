@@ -14,6 +14,8 @@ module.exports.getCryptoPrice = async (event) => {
 
     const { crypto, email } = event.queryStringParameters;
 
+    console.log(' getCryptoPrice send to email ==> ', email)
+
     try {
         const response = await axios.get(`${COINGECKO_API_BASE}?ids=${crypto}&vs_currencies=usd`);
 
