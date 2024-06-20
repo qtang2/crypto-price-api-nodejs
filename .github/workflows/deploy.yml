@@ -7,9 +7,9 @@ on:
 
 env:
   AWS_REGION: ap-southeast-2
-  STACK_NAME: crypto-price-project
+  STACK_NAME: crypto-price
   ENVIRONMENT: development
-  SES_EMAIL: qianxtang@gmail.com  # Update this with your verified email
+  SES_EMAIL: qianxtang@gmail.com
 
 jobs:
   deploy:

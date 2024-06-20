@@ -15,10 +15,6 @@ Parameters:
     AllowedValues:
       - development
       - production
-  TableName:
-    Type: String
-  SesEmail:
-    Type: String
 
 Resources:
   CryptoApi:
@@ -26,85 +22,35 @@ Resources:
     Properties:
       Name: "CryptoAPI"
       StageName: "Prod"
-      DefinitionBody:
-        openapi: 3.0.1
-        info:
-          title: CryptoAPI
-          version: '1.0'
-        paths:
-          /crypto-price:
-            get:
-              parameters:
-                - name: crypto
-                  in: query
-                  required: true
-                  schema:
-                    type: string
-                - name: email
-                  in: query
-                  required: true
-                  schema:
-                    type: string
-              responses:
-                '200':
-                  description: 200 response
-                  content:
-                    application/json:
-                      schema:
-                        type: object
-                        properties:
-                          message:
-                            type: string
-              x-amazon-apigateway-integration:
-                uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetCryptoPriceFunction.Arn}/invocations
-                passthroughBehavior: when_no_match
-                httpMethod: POST
-                type: aws_proxy
 
-          /search-history:
-            get:
-              responses:
-                '200':
-                  description: 200 response
-                  content:
-                    application/json:
-                      schema:
-                        type: object
-              x-amazon-apigateway-integration:
-                uri:
-                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetSearchHistoryFunction.Arn}/invocations
-                passthroughBehavior: when_no_match
-                httpMethod: POST
-                type: aws_proxy
-
+  # Define the IAM role
   LambdaExecutionRole:
     Type: "AWS::IAM::Role"
-    Properties:
+    Properties: 
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
-        Statement:
+        Statement: 
           - Effect: "Allow"
-            Principal:
-              Service:
+            Principal: 
+              Service: 
                 - "lambda.amazonaws.com"
-            Action:
+            Action: 
               - "sts:AssumeRole"
-      Policies:
+      Policies: 
         - PolicyName: "LambdaPolicy"
-          PolicyDocument:
+          PolicyDocument: 
             Version: "2012-10-17"
-            Statement:
+            Statement: 
               - Effect: "Allow"
-                Action:
+                Action: 
                   - "dynamodb:Scan"
                   - "dynamodb:PutItem"
                   - "dynamodb:UpdateItem"
                   - "dynamodb:GetItem"
-                Resource:
+                Resource: 
                   - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${Environment}_CryptoPriceSearchHistory"
               - Effect: "Allow"
-                Action:
+                Action: 
                   - "logs:CreateLogGroup"
                   - "logs:CreateLogStream"
                   - "logs:PutLogEvents"
@@ -115,11 +61,12 @@ Resources:
     Properties:
       Handler: handler.getCryptoPrice
       Runtime: nodejs20.x
+      Timeout: 290
       Role: !GetAtt LambdaExecutionRole.Arn
       Environment:
         Variables:
-          TABLE_NAME: !Ref TableName
-          SES_EMAIL: !Ref SesEmail
+          TABLE_NAME: !Sub "${Environment}_CryptoPriceSearchHistory"
+          SES_EMAIL: 'qianxtang@gmail.com'
       Events:
         GetCryptoPriceApi:
           Type: Api
@@ -136,7 +83,7 @@ Resources:
       Role: !GetAtt LambdaExecutionRole.Arn
       Environment:
         Variables:
-          TABLE_NAME: !Ref TableName
+          TABLE_NAME: !Sub "${Environment}_CryptoPriceSearchHistory"
       Events:
         GetSearchHistoryApi:
           Type: Api
@@ -148,7 +95,7 @@ Resources:
   CryptoPriceTable:
     Type: 'AWS::DynamoDB::Table'
     Properties:
-      TableName: !Ref TableName
+      TableName: !Sub "${Environment}_CryptoPriceSearchHistory"
       AttributeDefinitions:
         - AttributeName: searchId
           AttributeType: S

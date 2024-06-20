@@ -14,12 +14,66 @@ Parameters:
     AllowedValues:
     - development
     - production
+  TableName:
+    Type: String
+  SesEmail:
+    Type: String
 Resources:
   CryptoApi:
     Type: AWS::Serverless::Api
     Properties:
       Name: CryptoAPI
       StageName: Prod
+      DefinitionBody:
+        openapi: 3.0.1
+        info:
+          title: CryptoAPI
+          version: '1.0'
+        paths:
+          /crypto-price:
+            get:
+              parameters:
+              - name: crypto
+                in: query
+                required: true
+                schema:
+                  type: string
+              - name: email
+                in: query
+                required: true
+                schema:
+                  type: string
+              responses:
+                '200':
+                  description: 200 response
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          message:
+                            type: string
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetCryptoPriceFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+          /search-history:
+            get:
+              responses:
+                '200':
+                  description: 200 response
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetSearchHistoryFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -56,7 +110,6 @@ Resources:
     Properties:
       Handler: handler.getCryptoPrice
       Runtime: nodejs20.x
-      Timeout: 290
       Role:
         Fn::GetAtt:
         - LambdaExecutionRole
@@ -64,8 +117,9 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME:
-            Fn::Sub: ${Environment}_CryptoPriceSearchHistory
-          SES_EMAIL: qianxtang@gmail.com
+            Ref: TableName
+          SES_EMAIL:
+            Ref: SesEmail
       Events:
         GetCryptoPriceApi:
           Type: Api
@@ -89,7 +143,7 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME:
-            Fn::Sub: ${Environment}_CryptoPriceSearchHistory
+            Ref: TableName
       Events:
         GetSearchHistoryApi:
           Type: Api
@@ -102,7 +156,7 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName:
-        Fn::Sub: ${Environment}_CryptoPriceSearchHistory
+        Ref: TableName
       AttributeDefinitions:
       - AttributeName: searchId
         AttributeType: S

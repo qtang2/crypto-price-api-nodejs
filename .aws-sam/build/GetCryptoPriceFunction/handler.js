@@ -9,6 +9,10 @@ const COINGECKO_API_BASE = 'https://api.coingecko.com/api/v3/simple/price'
 
 module.exports.getCryptoPrice = async (event) => {
     console.log(' getCryptoPrice event ==> ', event)
+    console.log(' getCryptoPrice process.env.SES_EMAIL ==> ', process.env.SES_EMAIL)
+
+    console.log(' getCryptoPrice process.env.TABLE_NAME ==> ', process.env.TABLE_NAME)
+
     const { crypto, email } = event.queryStringParameters;
 
     try {
@@ -16,7 +20,6 @@ module.exports.getCryptoPrice = async (event) => {
 
         const price = response.data[crypto].usd;
 
-        console.log(' getCryptoPrice SES_EMAIL ==> ', process.env.SES_EMAIL)
 
         const emailParams = {
             Source: process.env.SES_EMAIL,
@@ -37,7 +40,6 @@ module.exports.getCryptoPrice = async (event) => {
 
         await ses.sendEmail(emailParams).promise();
 
-        console.log(' getCryptoPrice TABLE_NAME ==> ', process.env.TABLE_NAME)
 
         const searchId = uuid.v4();
         const timestamp = new Date().toISOString();
