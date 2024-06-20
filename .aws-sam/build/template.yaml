@@ -33,7 +33,7 @@ Resources:
           /crypto-price:
             get:
               parameters:
-              - name: crypto
+              - name: id
                 in: query
                 required: true
                 schema:
@@ -95,10 +95,11 @@ Resources:
             Action:
             - dynamodb:Scan
             - dynamodb:PutItem
-            - dynamodb:UpdateItem
             - dynamodb:GetItem
+            - ses:SendEmail
             Resource:
             - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${Environment}_CryptoPriceSearchHistory
+            - Fn::Sub: arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/${SesEmail}
           - Effect: Allow
             Action:
             - logs:CreateLogGroup
@@ -116,10 +117,8 @@ Resources:
         - Arn
       Environment:
         Variables:
-          TABLE_NAME:
-            Ref: TableName
-          SES_EMAIL:
-            Ref: SesEmail
+          TABLE_NAME: development_CryptoPriceSearchHistory
+          SES_EMAIL: qianxtang@gmail.com
       Events:
         GetCryptoPriceApi:
           Type: Api

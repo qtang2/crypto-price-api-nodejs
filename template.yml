@@ -103,6 +103,7 @@ Resources:
                   - "ses:SendEmail"
                 Resource:
                   - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${Environment}_CryptoPriceSearchHistory"
+                  - !Sub "arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/${SesEmail}"
               - Effect: "Allow"
                 Action:
                   - "logs:CreateLogGroup"
