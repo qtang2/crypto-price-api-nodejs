@@ -13,7 +13,10 @@ module.exports.getCryptoPrice = async (event) => {
 
     try {
         const response = await axios.get(`${COINGECKO_API_BASE}?ids=${crypto}&vs_currencies=usd`);
+
         const price = response.data[crypto].usd;
+
+        console.log(' getCryptoPrice SES_EMAIL ==> ', process.env.SES_EMAIL)
 
         const emailParams = {
             Source: process.env.SES_EMAIL,
@@ -33,6 +36,8 @@ module.exports.getCryptoPrice = async (event) => {
         };
 
         await ses.sendEmail(emailParams).promise();
+
+        console.log(' getCryptoPrice TABLE_NAME ==> ', process.env.TABLE_NAME)
 
         const searchId = uuid.v4();
         const timestamp = new Date().toISOString();

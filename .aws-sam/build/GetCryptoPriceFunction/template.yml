@@ -11,9 +11,8 @@ Globals:
 Parameters:
   Environment:
     Type: String
-    Default: default
+    Default: development
     AllowedValues:
-      - default
       - development
       - production
 
@@ -62,6 +61,7 @@ Resources:
     Properties:
       Handler: handler.getCryptoPrice
       Runtime: nodejs20.x
+      Timeout: 290
       Role: !GetAtt LambdaExecutionRole.Arn
       Environment:
         Variables:
