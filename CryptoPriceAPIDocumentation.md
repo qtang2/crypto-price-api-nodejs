@@ -21,12 +21,11 @@ Queries the current price of a specified cryptocurrency and sends an email with 
 | email     | string | Yes      | The email address to send the price information to.              |
 
 **Request Example:**
-GET /crypto-price?crypto=ethereum&email=apriltang156@gmail.com
-x
+GET /crypto-price?crypto=ethereum&email=qiantest2024@gmail.com
 **Response Example:**
 ```json
 {
-  "message": "The current price of ethereum is $2000. An email has been sent to apriltang156@gmail.com."
+  "message": "The current price of ethereum is $2000. An email has been sent to qiantest2024@gmail.com."
 }
 ```
 Error Response Example:
