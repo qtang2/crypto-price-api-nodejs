@@ -22,6 +22,7 @@ Queries the current price of a specified cryptocurrency and sends an email with 
 
 **Request Example:**
 GET /crypto-price?crypto=ethereum&email=qiantest2024@gmail.com
+
 **Response Example:**
 ```json
 {
@@ -43,6 +44,7 @@ GET /search-history
 Retrieves all the search history, including when and what cryptocurrency was queried.
 **Request Example:**
 GET https://g01r9x4fag.execute-api.ap-southeast-2.amazonaws.com/Prod/search-history
+
 **Response Example:**
 ```json
 [
